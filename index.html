@@ -331,6 +331,135 @@ label:first-child { margin-top: 0; }
 .project-name { font-size: 15px; color: var(--text); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .project-count { font-size: 12px; color: var(--text-dim); font-variant-numeric: tabular-nums; margin-left: 12px; }
 
+/* Analyse */
+.range-presets {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.range-presets button {
+  flex: 1 1 0; min-width: 56px;
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text-dim); padding: 8px 6px;
+  border-radius: 8px; font-size: 13px; cursor: pointer;
+  font-family: inherit;
+}
+.range-presets button.active {
+  background: var(--accent); color: #000;
+  border-color: var(--accent); font-weight: 600;
+}
+.range-custom {
+  display: none; gap: 8px; margin-bottom: 8px;
+}
+.range-custom.show { display: flex; }
+.range-custom input { flex: 1; font-size: 14px; padding: 10px 12px; }
+
+.analysis-columns {
+  margin-top: 14px;
+  display: flex; flex-wrap: wrap; gap: 6px;
+  align-items: center;
+}
+.col-chip {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 5px 6px 5px 12px;
+  font-size: 12px;
+  display: inline-flex; align-items: center; gap: 6px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  line-height: 1.3;
+}
+.col-chip .ctx { color: #a78bfa; }
+.col-chip .prj { color: var(--accent); }
+.col-chip .txt { color: var(--text-dim); font-style: italic; text-transform: none; letter-spacing: 0; }
+.col-chip .sep { color: var(--text-dim); font-weight: 400; margin: 0 3px; }
+.col-chip button {
+  background: none; border: none; color: var(--text-dim);
+  cursor: pointer; padding: 0 4px; font-size: 16px; line-height: 1;
+  font-family: inherit;
+}
+.col-add-btn {
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  color: var(--text-dim);
+  padding: 6px 14px;
+  border-radius: 18px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.col-add-form {
+  display: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  margin-top: 12px;
+}
+.col-add-form.show { display: block; }
+.col-add-form .row {
+  display: flex; gap: 8px; margin-top: 16px;
+}
+.col-add-form .row button {
+  flex: 1; padding: 11px; border: none; border-radius: 8px;
+  font-size: 14px; cursor: pointer; font-family: inherit; font-weight: 500;
+}
+.col-add-form .row .add { background: var(--accent); color: #000; font-weight: 600; }
+.col-add-form .row .cancel { background: var(--surface-2); color: var(--text); }
+
+.analysis-table-wrap {
+  margin-top: 18px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.analysis-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.analysis-table th, .analysis-table td {
+  padding: 8px 10px;
+  text-align: right;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+}
+.analysis-table th { white-space: normal; line-height: 1.3; vertical-align: bottom; min-width: 80px; }
+.analysis-table th:first-child, .analysis-table td:first-child {
+  text-align: left;
+  position: sticky; left: 0;
+  background: var(--surface);
+  z-index: 1;
+}
+.analysis-table thead th {
+  font-weight: 600;
+  font-size: 11px;
+  color: var(--text);
+  background: var(--surface-2);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.analysis-table thead th:first-child { background: var(--surface-2); color: var(--text-dim); }
+.analysis-table tbody td:first-child { color: var(--text-dim); font-size: 12px; }
+.analysis-table tfoot td {
+  font-weight: 700;
+  background: var(--surface-2);
+  border-bottom: none;
+}
+.analysis-table tfoot td:first-child { background: var(--surface-2); color: var(--text); }
+.analysis-table .zero { color: var(--text-dim); }
+.analysis-table .total { color: var(--accent); font-weight: 600; }
+.analysis-empty {
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 14px;
+}
+
 @media (min-width: 600px) {
   header, main, nav { max-width: 640px; margin-left: auto; margin-right: auto; width: 100%; }
 }
@@ -387,11 +516,40 @@ label:first-child { margin-top: 0; }
       <button id="btn-projects">Kontexte & Projekte</button>
     </div>
   </section>
+
+  <section id="screen-analysis" style="display:none">
+    <div class="range-presets">
+      <button data-preset="7d">7 Tage</button>
+      <button data-preset="30d">30 Tage</button>
+      <button data-preset="week">Woche</button>
+      <button data-preset="month">Monat</button>
+      <button data-preset="custom">Frei</button>
+    </div>
+    <div class="range-custom" id="range-custom">
+      <input type="date" id="range-from" title="Von">
+      <input type="date" id="range-to" title="Bis">
+    </div>
+    <div class="analysis-columns" id="analysis-columns"></div>
+    <div class="col-add-form" id="col-add-form">
+      <label for="col-add-context">Kontext</label>
+      <select id="col-add-context"></select>
+      <label for="col-add-project">Projekt</label>
+      <select id="col-add-project"></select>
+      <label for="col-add-intent">Stichwort in Aufgabe / Ergebnis</label>
+      <input type="text" id="col-add-intent" autocomplete="off" placeholder="z. B. Sitzung">
+      <div class="row">
+        <button class="cancel" id="col-add-cancel">Abbrechen</button>
+        <button class="add" id="col-add-submit">Hinzufügen</button>
+      </div>
+    </div>
+    <div class="analysis-table-wrap" id="analysis-table"></div>
+  </section>
 </main>
 
 <nav>
   <button id="tab-timer" class="active">Zeiterfassung</button>
   <button id="tab-list">Übersicht</button>
+  <button id="tab-analysis">Analyse</button>
 </nav>
 
 <div class="modal-back" id="modal-back">
@@ -463,6 +621,7 @@ label:first-child { margin-top: 0; }
 const STORAGE_KEY = 'zeiterfassung_v1';
 const ACTIVE_KEY = 'zeiterfassung_active_v1';
 const CONFIG_KEY = 'zeiterfassung_config_v1';
+const ANALYSIS_KEY = 'zeiterfassung_analysis_v1';
 const SYNC_INTERVAL_MS = 60000;
 
 let entries = [];
@@ -474,11 +633,17 @@ let tickInterval = null;
 let syncPollTimer = null;
 let syncInFlight = false;
 let currentScreen = 'timer';
+let analysis = { columns: [], preset: '7d', customFrom: '', customTo: '' };
 
 try {
   entries = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
   active = JSON.parse(localStorage.getItem(ACTIVE_KEY) || 'null');
   syncConfig = JSON.parse(localStorage.getItem(CONFIG_KEY) || 'null');
+  const storedAnalysis = JSON.parse(localStorage.getItem(ANALYSIS_KEY) || 'null');
+  if (storedAnalysis && typeof storedAnalysis === 'object') {
+    analysis = Object.assign(analysis, storedAnalysis);
+    if (!Array.isArray(analysis.columns)) analysis.columns = [];
+  }
 } catch (e) { console.error('Speicher lesen fehlgeschlagen', e); }
 
 let migrated = false;
@@ -502,6 +667,9 @@ function saveAll() {
 function saveConfig() {
   if (syncConfig) localStorage.setItem(CONFIG_KEY, JSON.stringify(syncConfig));
   else localStorage.removeItem(CONFIG_KEY);
+}
+function saveAnalysis() {
+  try { localStorage.setItem(ANALYSIS_KEY, JSON.stringify(analysis)); } catch (e) {}
 }
 
 function formatDuration(ms) {
@@ -646,6 +814,7 @@ async function syncNow({ force = false } = {}) {
         saveAll();
         refreshProjectList();
         if (currentScreen === 'list') renderList();
+        if (currentScreen === 'analysis') renderAnalysis();
       }
       if (sameAsRemote && !force) {
         setSyncStatus('idle');
@@ -782,11 +951,17 @@ function switchScreen(name) {
   currentScreen = name;
   $('screen-timer').style.display = name === 'timer' ? 'block' : 'none';
   $('screen-list').style.display = name === 'list' ? 'block' : 'none';
+  $('screen-analysis').style.display = name === 'analysis' ? 'block' : 'none';
   $('tab-timer').classList.toggle('active', name === 'timer');
   $('tab-list').classList.toggle('active', name === 'list');
+  $('tab-analysis').classList.toggle('active', name === 'analysis');
   if (name === 'list') {
     refreshProjectList();
     renderList();
+  }
+  if (name === 'analysis') {
+    closeColAddForm();
+    renderAnalysis();
   }
 }
 function start() {
@@ -1029,6 +1204,7 @@ function renameField(field, oldName) {
   });
   if (changed === 0) return;
   saveAll();
+  syncAnalysisAfterRename(field, oldName, newName);
   refreshProjectList();
   renderContextList();
   renderProjectList();
@@ -1043,6 +1219,221 @@ function openProjects() {
 }
 function closeProjects() {
   $('projects-back').classList.remove('show');
+}
+
+// ---------- Analyse ----------
+
+function localDayKey(d) {
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+
+function getAnalysisRange() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  let from = null, to = null;
+  if (analysis.preset === '7d') {
+    to = new Date(today);
+    from = new Date(today); from.setDate(from.getDate() - 6);
+  } else if (analysis.preset === '30d') {
+    to = new Date(today);
+    from = new Date(today); from.setDate(from.getDate() - 29);
+  } else if (analysis.preset === 'week') {
+    const dow = (today.getDay() + 6) % 7; // 0 = Montag
+    from = new Date(today); from.setDate(from.getDate() - dow);
+    to = new Date(from); to.setDate(to.getDate() + 6);
+  } else if (analysis.preset === 'month') {
+    from = new Date(today.getFullYear(), today.getMonth(), 1);
+    to = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  } else if (analysis.preset === 'custom') {
+    from = analysis.customFrom ? new Date(analysis.customFrom + 'T00:00:00') : null;
+    to = analysis.customTo ? new Date(analysis.customTo + 'T00:00:00') : null;
+  }
+  return { from, to };
+}
+
+function entryMatchesColumn(entry, col) {
+  if (col.context && entry.context !== col.context) return false;
+  if (col.project && entry.project !== col.project) return false;
+  if (col.intent) {
+    const q = col.intent.toLowerCase();
+    const hay = ((entry.intent || '') + ' ' + (entry.result || '')).toLowerCase();
+    if (!hay.includes(q)) return false;
+  }
+  return true;
+}
+
+function formatHM(ms) {
+  if (!ms || ms <= 0) return '';
+  const totalMin = Math.round(ms / 60000);
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+  return `${h}:${pad(m)}`;
+}
+
+function columnLabel(col) {
+  const parts = [];
+  if (col.context) parts.push(`<span class="ctx">${escapeHtml(col.context)}</span>`);
+  if (col.project) parts.push(`<span class="prj">${escapeHtml(col.project)}</span>`);
+  if (col.intent) parts.push(`<span class="txt">„${escapeHtml(col.intent)}"</span>`);
+  return parts.join('<span class="sep">·</span>');
+}
+
+function renderAnalysis() {
+  document.querySelectorAll('.range-presets button').forEach(b => {
+    b.classList.toggle('active', b.dataset.preset === analysis.preset);
+  });
+  $('range-custom').classList.toggle('show', analysis.preset === 'custom');
+  if ($('range-from').value !== (analysis.customFrom || '')) $('range-from').value = analysis.customFrom || '';
+  if ($('range-to').value !== (analysis.customTo || '')) $('range-to').value = analysis.customTo || '';
+
+  // Chips + Add-Button
+  const chipsEl = $('analysis-columns');
+  const chipsHtml = analysis.columns.map(c => `
+    <span class="col-chip">
+      ${columnLabel(c)}
+      <button data-id="${c.id}" title="Spalte entfernen">×</button>
+    </span>
+  `).join('');
+  chipsEl.innerHTML = chipsHtml + `<button class="col-add-btn" id="btn-col-add">+ Spalte</button>`;
+  chipsEl.querySelectorAll('.col-chip button').forEach(b => {
+    b.addEventListener('click', () => removeAnalysisColumn(b.dataset.id));
+  });
+  $('btn-col-add').addEventListener('click', openColAddForm);
+
+  // Tabelle
+  const wrap = $('analysis-table');
+  if (analysis.columns.length === 0) {
+    wrap.innerHTML = '<div class="analysis-empty">Füge mit „+ Spalte" eine Vergleichseinheit hinzu (Kontext, Projekt und/oder Stichwort).</div>';
+    return;
+  }
+  const { from, to } = getAnalysisRange();
+  if (!from || !to) {
+    wrap.innerHTML = '<div class="analysis-empty">Wähle einen Zeitraum.</div>';
+    return;
+  }
+  if (from > to) {
+    wrap.innerHTML = '<div class="analysis-empty">„Von" liegt nach „Bis".</div>';
+    return;
+  }
+
+  // Tage erzeugen (lokale Tagesgrenzen)
+  const days = [];
+  const cursor = new Date(from);
+  while (cursor <= to) {
+    days.push(new Date(cursor));
+    cursor.setDate(cursor.getDate() + 1);
+  }
+  if (days.length > 366) {
+    wrap.innerHTML = '<div class="analysis-empty">Zeitraum zu lang (max. 366 Tage). Bitte enger fassen.</div>';
+    return;
+  }
+
+  // Matrix dayKey -> colId -> ms
+  const matrix = {};
+  days.forEach(d => { matrix[localDayKey(d)] = {}; });
+
+  entries.forEach(e => {
+    if (!e.stop) return;
+    const startD = new Date(e.start);
+    const key = localDayKey(startD);
+    if (!(key in matrix)) return;
+    const dur = new Date(e.stop) - startD;
+    if (dur <= 0) return;
+    analysis.columns.forEach(c => {
+      if (entryMatchesColumn(e, c)) {
+        matrix[key][c.id] = (matrix[key][c.id] || 0) + dur;
+      }
+    });
+  });
+
+  const colTotals = {};
+  analysis.columns.forEach(c => colTotals[c.id] = 0);
+  let grandTotal = 0;
+
+  let html = '<table class="analysis-table"><thead><tr><th>Datum</th>';
+  analysis.columns.forEach(c => { html += `<th>${columnLabel(c)}</th>`; });
+  html += '<th class="total">∑</th></tr></thead><tbody>';
+
+  days.slice().reverse().forEach(d => {
+    const key = localDayKey(d);
+    html += `<tr><td>${formatDate(d.toISOString())}</td>`;
+    let rowSum = 0;
+    analysis.columns.forEach(c => {
+      const ms = matrix[key][c.id] || 0;
+      colTotals[c.id] += ms;
+      rowSum += ms;
+      const txt = formatHM(ms);
+      html += `<td class="${ms === 0 ? 'zero' : ''}">${txt || '—'}</td>`;
+    });
+    grandTotal += rowSum;
+    html += `<td class="total ${rowSum === 0 ? 'zero' : ''}">${formatHM(rowSum) || '—'}</td></tr>`;
+  });
+
+  html += '</tbody><tfoot><tr><td>∑</td>';
+  analysis.columns.forEach(c => {
+    html += `<td>${formatHM(colTotals[c.id]) || '—'}</td>`;
+  });
+  html += `<td class="total">${formatHM(grandTotal) || '—'}</td></tr></tfoot></table>`;
+
+  wrap.innerHTML = html;
+}
+
+function removeAnalysisColumn(id) {
+  analysis.columns = analysis.columns.filter(c => c.id !== id);
+  saveAnalysis();
+  renderAnalysis();
+}
+
+function openColAddForm() {
+  const cSet = new Set(), pSet = new Set();
+  entries.forEach(e => {
+    if (e.context) cSet.add(e.context);
+    if (e.project) pSet.add(e.project);
+  });
+  const ctxOptions = '<option value="">— beliebig —</option>' +
+    Array.from(cSet).sort((a, b) => a.localeCompare(b, 'de'))
+      .map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+  const prjOptions = '<option value="">— beliebig —</option>' +
+    Array.from(pSet).sort((a, b) => a.localeCompare(b, 'de'))
+      .map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join('');
+  $('col-add-context').innerHTML = ctxOptions;
+  $('col-add-project').innerHTML = prjOptions;
+  $('col-add-context').value = '';
+  $('col-add-project').value = '';
+  $('col-add-intent').value = '';
+  $('col-add-form').classList.add('show');
+}
+
+function closeColAddForm() {
+  $('col-add-form').classList.remove('show');
+}
+
+function submitColAdd() {
+  const context = $('col-add-context').value;
+  const project = $('col-add-project').value;
+  const intent = $('col-add-intent').value.trim();
+  if (!context && !project && !intent) {
+    alert('Mindestens ein Filter (Kontext, Projekt oder Stichwort) angeben.');
+    return;
+  }
+  analysis.columns.push({ id: uid(), context, project, intent });
+  saveAnalysis();
+  closeColAddForm();
+  renderAnalysis();
+}
+
+function syncAnalysisAfterRename(field, oldName, newName) {
+  let changed = false;
+  analysis.columns = analysis.columns.filter(c => {
+    if (c[field] !== oldName) return true;
+    if (newName) { c[field] = newName; changed = true; return true; }
+    c[field] = ''; changed = true;
+    return !!(c.context || c.project || c.intent);
+  });
+  if (changed) {
+    saveAnalysis();
+    if (currentScreen === 'analysis') renderAnalysis();
+  }
 }
 
 // ---------- Settings ----------
@@ -1126,6 +1517,28 @@ setupSuggestions('intent');
 setupSuggestions('result');
 $('tab-timer').addEventListener('click', () => switchScreen('timer'));
 $('tab-list').addEventListener('click', () => switchScreen('list'));
+$('tab-analysis').addEventListener('click', () => switchScreen('analysis'));
+document.querySelectorAll('.range-presets button').forEach(b => {
+  b.addEventListener('click', () => {
+    analysis.preset = b.dataset.preset;
+    saveAnalysis();
+    renderAnalysis();
+  });
+});
+$('range-from').addEventListener('change', () => {
+  analysis.customFrom = $('range-from').value;
+  analysis.preset = 'custom';
+  saveAnalysis();
+  renderAnalysis();
+});
+$('range-to').addEventListener('change', () => {
+  analysis.customTo = $('range-to').value;
+  analysis.preset = 'custom';
+  saveAnalysis();
+  renderAnalysis();
+});
+$('col-add-cancel').addEventListener('click', closeColAddForm);
+$('col-add-submit').addEventListener('click', submitColAdd);
 $('filter-context').addEventListener('change', renderList);
 $('filter-project').addEventListener('change', renderList);
 $('filter-date-from').addEventListener('change', renderList);
